@@ -1,1 +1,0 @@
-# encarta_hospital
