@@ -12,26 +12,21 @@ const securityMiddleware = async (
   try {
     const role: RateLimitRole = req.user?.role || "guest";
 
-    let limit: number;
-    let message: string;
+    const roleRateLimits: Record<RateLimitRole, { limit: number; label: string }> = {
+      admin: { limit: 1000, label: "Admin" },
+      doctor: { limit: 600, label: "Doctor" },
+      nurse: { limit: 600, label: "Nurse" },
+      registry: { limit: 450, label: "Registry" },
+      lab_technician: { limit: 450, label: "Lab technician" },
+      pharmacist: { limit: 400, label: "Pharmacist" },
+      ward_manager: { limit: 350, label: "Ward manager" },
+      accounts: { limit: 300, label: "Accounts" },
+      guest: { limit: 20, label: "Guest" },
+    };
 
-    switch (role) {
-      case "admin":
-        limit = 1000;
-        message =
-          "Admin request limit exceeded (1000 per minute). Slow down, admin! Please wait before making another request.";
-        break;
-      case "accounts":
-        limit = 200;
-        message =
-          "User request limit exceeded (200 per minute). Please wait before making another request.";
-        break;
-      default:
-        limit = 20;
-        message =
-          "Guest request limit exceeded (20 per minute). Please sign up for higher limits or wait before making another request.";
-        break;
-    }
+    const selectedRate = roleRateLimits[role] ?? roleRateLimits.guest;
+    const limit = selectedRate.limit;
+    const message = `${selectedRate.label} request limit exceeded (${limit} per minute). Please wait before making another request.`;
 
     if (!aj) {
       // Arcjet key not configured — skip rate-limiting in non-production environments

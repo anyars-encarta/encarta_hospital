@@ -5,7 +5,7 @@ declare global {
         id?: string;
         email?: string;
         name?: string;
-        role?: "admin" | "accounts";
+        role?: UserRoles;
       };
     }
   }

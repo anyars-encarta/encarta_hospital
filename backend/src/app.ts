@@ -6,6 +6,11 @@ import securityMiddleware from "./middleware/security.js";
 import requireAuth from "./middleware/requireAuth.js";
 import { auth } from "./lib/auth.js";
 import userRoutes from "./routes/users.js";
+import patientsEncountersRoutes from "./routes/patients-encounters.js";
+import insuranceVerificationRoutes from "./routes/insurance-verification.js";
+import vitalsConsultationRoutes from "./routes/vitals-consultation.js";
+import labPharmacyRoutes from "./routes/lab-pharmacy.js";
+import wardDischargeRoutes from "./routes/ward-discharge.js";
 
 const app = express();
 
@@ -83,6 +88,11 @@ app.use("/api", securityMiddleware);
 
 // API Routes
 app.use("/api/users", userRoutes);
+app.use("/api/patients-encounters", patientsEncountersRoutes);
+app.use("/api/insurance-verification", insuranceVerificationRoutes);
+app.use("/api/vitals-consultation", vitalsConsultationRoutes);
+app.use("/api/lab-pharmacy", labPharmacyRoutes);
+app.use("/api/ward-discharge", wardDischargeRoutes);
 
 // Routes
 app.get("/", (req, res) => {

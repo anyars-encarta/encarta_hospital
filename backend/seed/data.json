@@ -1,1 +1,88 @@
-{}
+{
+  "departments": [
+    { "id": "dep_registry", "code": "REG", "name": "Registry" },
+    { "id": "dep_consult", "code": "CONS", "name": "Consultation" },
+    { "id": "dep_lab", "code": "LAB", "name": "Laboratory" },
+    { "id": "dep_pharm", "code": "PHARM", "name": "Pharmacy" },
+    { "id": "dep_ward", "code": "WARD", "name": "Ward" }
+  ],
+  "insuranceProviders": [
+    {
+      "id": "ins_nhia",
+      "code": "NHIA",
+      "name": "National Health Insurance Authority",
+      "contactPhone": "+233200000001",
+      "contactEmail": "support@nhia.local"
+    },
+    {
+      "id": "ins_bestcare",
+      "code": "BSTCARE",
+      "name": "BestCare HMO",
+      "contactPhone": "+233200000002",
+      "contactEmail": "ops@bestcare.local"
+    }
+  ],
+  "patients": [
+    {
+      "id": "pat_001",
+      "hospitalNumber": "HSP-0001",
+      "firstName": "Kwame",
+      "lastName": "Mensah",
+      "phone": "+233240000001",
+      "gender": "male",
+      "dateOfBirth": "1990-05-11"
+    },
+    {
+      "id": "pat_002",
+      "hospitalNumber": "HSP-0002",
+      "firstName": "Ama",
+      "lastName": "Boateng",
+      "phone": "+233240000002",
+      "gender": "female",
+      "dateOfBirth": "1986-08-24"
+    }
+  ],
+  "medicines": [
+    {
+      "id": "med_001",
+      "medicineCode": "MED-PAR-500",
+      "genericName": "Paracetamol",
+      "dosageForm": "Tablet",
+      "strength": "500mg",
+      "unit": "tablet"
+    },
+    {
+      "id": "med_002",
+      "medicineCode": "MED-AMX-500",
+      "genericName": "Amoxicillin",
+      "dosageForm": "Capsule",
+      "strength": "500mg",
+      "unit": "capsule"
+    }
+  ],
+  "laboratoryTests": [
+    {
+      "id": "lab_fbc",
+      "code": "LAB-FBC",
+      "name": "Full Blood Count",
+      "category": "Hematology",
+      "specimenType": "Blood"
+    },
+    {
+      "id": "lab_rbs",
+      "code": "LAB-RBS",
+      "name": "Random Blood Sugar",
+      "category": "Chemistry",
+      "specimenType": "Blood"
+    }
+  ],
+  "wards": [
+    {
+      "id": "ward_med",
+      "code": "WARD-MED",
+      "name": "Medical Ward",
+      "wardType": "General",
+      "capacity": 30
+    }
+  ]
+}

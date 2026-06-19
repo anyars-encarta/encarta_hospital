@@ -14,10 +14,16 @@ const parsePositiveInt = (value: unknown) => {
 
 const isValidRole = (
   value: unknown,
-): value is "admin" | "accounts" => {
+): value is UserRoles => {
   return (
     value === "admin" ||
-    value === "accounts"
+    value === "registry" ||
+    value === "doctor" ||
+    value === "nurse" ||
+    value === "pharmacist" ||
+    value === "lab_technician" ||
+    value === "accounts" ||
+    value === "ward_manager"
   );
 };
 
@@ -211,7 +217,7 @@ router.put("/:id", async (req, res) => {
     if (!isSelf && !role) {
       return res.status(400).json({
         success: false,
-        error: "role must be one of: admin, accounts.",
+        error: "role must be one of: admin, registry, doctor, nurse, pharmacist, lab_technician, accounts, ward_manager.",
       });
     }
 

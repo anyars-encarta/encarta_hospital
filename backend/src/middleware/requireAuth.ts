@@ -36,7 +36,18 @@ const requireAuth = async (
       });
     }
 
-    if (currentUser.role !== "admin" && currentUser.role !== "accounts") {
+    const validRoles: UserRoles[] = [
+      "admin",
+      "registry",
+      "doctor",
+      "nurse",
+      "pharmacist",
+      "lab_technician",
+      "accounts",
+      "ward_manager",
+    ];
+
+    if (!validRoles.includes(currentUser.role as UserRoles)) {
       return res.status(403).json({
         error: "Forbidden",
         message: "Your account role is not recognized.",
