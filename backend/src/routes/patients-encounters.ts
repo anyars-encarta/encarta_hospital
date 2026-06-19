@@ -124,28 +124,32 @@ router.post("/encounters", async (req, res, next) => {
       return;
     }
 
-    const [created] = await db
-      .insert(encounters)
-      .values({
-        id: body.id,
-        encounterNumber: body.encounterNumber,
-        patientId: body.patientId,
-        encounterType: body.encounterType ?? "opd",
-        status: "open",
-        currentStage: "registry",
-        registryUserId: req.user.id,
-        insuranceVerified: false,
-        triagePriority: body.triagePriority,
-      })
-      .returning();
+    const created = await db.transaction(async (tx) => {
+      const [encounter] = await tx
+        .insert(encounters)
+        .values({
+          id: body.id,
+          encounterNumber: body.encounterNumber,
+          patientId: body.patientId,
+          encounterType: body.encounterType ?? "opd",
+          status: "open",
+          currentStage: "registry",
+          registryUserId: req.user.id,
+          insuranceVerified: false,
+          triagePriority: body.triagePriority,
+        })
+        .returning();
 
-    await db.insert(encounterTransitions).values({
-      id: `trans_${created.id}_registry`,
-      encounterId: created.id,
-      fromStage: null,
-      toStage: "registry",
-      changedByUserId: req.user.id,
-      notes: "Encounter created",
+      await tx.insert(encounterTransitions).values({
+        id: `trans_${encounter.id}_registry`,
+        encounterId: encounter.id,
+        fromStage: null,
+        toStage: "registry",
+        changedByUserId: req.user.id,
+        notes: "Encounter created",
+      });
+
+      return encounter;
     });
 
     res.status(201).json({ data: created });

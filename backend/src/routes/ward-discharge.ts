@@ -29,49 +29,47 @@ router.post("/:encounterId/admit", async (req, res, next) => {
       return;
     }
 
-    const [bed] = await db
-      .select()
-      .from(wardBeds)
-      .where(and(eq(wardBeds.id, body.wardBedId), eq(wardBeds.status, "available")))
-      .limit(1);
+    const admission = await db.transaction(async (tx) => {
+      const [bed] = await tx
+        .update(wardBeds)
+        .set({ status: "occupied", updatedAt: new Date() })
+        .where(and(eq(wardBeds.id, body.wardBedId), eq(wardBeds.status, "available")))
+        .returning();
 
-    if (!bed) {
-      res.status(400).json({ error: "Selected bed is not available" });
-      return;
-    }
+      if (!bed) {
+        throw new Error("Selected bed is not available");
+      }
 
-    const [admission] = await db
-      .insert(admissions)
-      .values({
-        id: body.id,
+      const [createdAdmission] = await tx
+        .insert(admissions)
+        .values({
+          id: body.id,
+          encounterId: req.params.encounterId,
+          patientId: body.patientId,
+          admittingConsultationId: body.admittingConsultationId,
+          admittedByUserId: req.user.id,
+          wardId: body.wardId,
+          wardBedId: body.wardBedId,
+          admissionDiagnosis: body.admissionDiagnosis,
+          status: "active",
+        })
+        .returning();
+
+      await tx
+        .update(encounters)
+        .set({ currentStage: "ward", updatedAt: new Date() })
+        .where(eq(encounters.id, req.params.encounterId));
+
+      await tx.insert(encounterTransitions).values({
+        id: `trans_${req.params.encounterId}_${Date.now()}`,
         encounterId: req.params.encounterId,
-        patientId: body.patientId,
-        admittingConsultationId: body.admittingConsultationId,
-        admittedByUserId: req.user.id,
-        wardId: body.wardId,
-        wardBedId: body.wardBedId,
-        admissionDiagnosis: body.admissionDiagnosis,
-        status: "active",
-      })
-      .returning();
+        fromStage: "consultation",
+        toStage: "ward",
+        changedByUserId: req.user.id,
+        notes: "Patient admitted",
+      });
 
-    await db
-      .update(wardBeds)
-      .set({ status: "occupied", updatedAt: new Date() })
-      .where(eq(wardBeds.id, body.wardBedId));
-
-    await db
-      .update(encounters)
-      .set({ currentStage: "ward", updatedAt: new Date() })
-      .where(eq(encounters.id, req.params.encounterId));
-
-    await db.insert(encounterTransitions).values({
-      id: `trans_${req.params.encounterId}_${Date.now()}`,
-      encounterId: req.params.encounterId,
-      fromStage: "consultation",
-      toStage: "ward",
-      changedByUserId: req.user.id,
-      notes: "Patient admitted",
+      return createdAdmission;
     });
 
     res.status(201).json({ data: admission });
