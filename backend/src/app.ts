@@ -6,6 +6,7 @@ import securityMiddleware from "./middleware/security.js";
 import requireAuth from "./middleware/requireAuth.js";
 import { auth } from "./lib/auth.js";
 import userRoutes from "./routes/users.js";
+import setupRoutes from "./routes/setup.js";
 import patientsEncountersRoutes from "./routes/patients-encounters.js";
 import insuranceVerificationRoutes from "./routes/insurance-verification.js";
 import vitalsConsultationRoutes from "./routes/vitals-consultation.js";
@@ -87,12 +88,17 @@ app.use("/api", requireAuth);
 app.use("/api", securityMiddleware);
 
 // API Routes
+app.use("/api/setup", setupRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/patients-encounters", patientsEncountersRoutes);
 app.use("/api/insurance-verification", insuranceVerificationRoutes);
 app.use("/api/vitals-consultation", vitalsConsultationRoutes);
 app.use("/api/lab-pharmacy", labPharmacyRoutes);
 app.use("/api/ward-discharge", wardDischargeRoutes);
+
+app.use("/api", (_req, res) => {
+  res.status(404).json({ error: "API route not found" });
+});
 
 // Routes
 app.get("/", (req, res) => {
